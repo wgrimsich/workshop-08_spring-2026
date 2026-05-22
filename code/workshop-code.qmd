@@ -76,56 +76,57 @@ theme_set(theme_bw())
 Data source: Valliere, Justin; Zhang, Jacqueline; Sharifi, M.; Rundel, Philip (2019). Data from: Can we condition native plants to increase drought tolerance and improve restoration success? [Dataset]. Dryad. [https://doi.org/10.5061/dryad.v0861f7](https://doi.org/10.5061/dryad.v0861f7)
 
 ```{r}
-#| label: data cleaning
+# creating a new object
+drought_exp_clean <- drought_exp |>
+# cleaning names in object
+clean_names() |>
+# changing species names
+mutate(species_name = case_match(
+species,
+"ENCCAL" ~ "Encelia californica", # bush sunflower
+"ESCCAL" ~ "Eschscholzia californica", # California poppy
+"PENCEN" ~ "Penstemon centranthifolius", # Scarlet bugler
+"GRICAM" ~ "Grindelia camporum", # Gumweed
+"SALLEU" ~ "Salvia leucophylla", # purple sage
+"STIPUL" ~ "Stipa pulchra", # purple needlegrass
+"LOTSCO" ~ "Lotus scoparius" # deerweed
+)) |>
+# changing treatment names
+mutate(water_treatment = case_match(
+water,
+"WW" ~ "Well watered",
+"DS" ~ "Drought stressed"
+)) |>
+#
+mutate(species_name = as_factor(species_name),
+species_name = fct_relevel(species_name,
+"Lotus scoparius",
+"Penstemon centranthifolius",
+"Salvia leucophylla",
+"Encelia californica",
+"Stipa pulchra",
+"Eschscholzia californica",
+"Grindelia camporum")) |>
+mutate(water_treatment = as_factor(water_treatment),
+water_treatment = fct_relevel(water_treatment,
+"Drought stressed",
+"Well watered")) |>
 
-# 
-drought_exp_clean <- drought_exp 
-  # 
-  clean_names() 
-  # 
-  mutate(species_name = case_match(
-    species,
-    "ENCCAL" ~ "Encelia californica", # bush sunflower
-    "ESCCAL" ~ "Eschscholzia californica", # California poppy
-    "PENCEN" ~ "Penstemon centranthifolius", # Scarlet bugler
-    "GRICAM" ~ "Grindelia camporum", # Gumweed
-    "SALLEU" ~ "Salvia leucophylla", # purple sage
-    "STIPUL" ~ "Stipa pulchra", # purple needlegrass
-    "LOTSCO" ~ "Lotus scoparius" # deerweed
-  )) 
-  # 
-  mutate(water_treatment = case_match(
-    water,
-    "WW" ~ "Well watered",
-    "DS" ~ "Drought stressed"
-  ))  
-  # 
-  mutate(species_name = as_factor(species_name),
-         species_name = fct_relevel(species_name,
-                                    "Lotus scoparius",
-                                    "Penstemon centranthifolius",
-                                    "Salvia leucophylla",
-                                    "Encelia californica",
-                                    "Stipa pulchra",
-                                    "Eschscholzia californica",
-                                    "Grindelia camporum")) 
-  mutate(water_treatment = as_factor(water_treatment),
-         water_treatment = fct_relevel(water_treatment,
-                                       "Drought stressed",
-                                       "Well watered")) 
-  #
-  select(species_name, water_treatment, sla, total_g)
+# selecting for four variables
+select(species_name, water_treatment, sla, total_g)
 ```
 
 Insert code to double check the structure of the data frame here.  
 
-
-
+```{r}
+str(drought_exp_clean)
+```
 
 Insert code to display 10 random rows from the data frame here.  
 
-
-
+```{r}
+slice_sample(drought_exp_clean, n = 10)
+```
 
 
 # 3. Visualizing data
